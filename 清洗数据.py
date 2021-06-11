@@ -284,14 +284,33 @@ for data in result_str:
         if currentstring1 != '':
             current_string_list.append(currentstring1+'期')
     
+        flag1 = False
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)幢(.*)',id_to_categories['houseno'])
         if currentstring1 != '':
+            flag1 = True
             current_string_list.append(currentstring1+'幢')
             
-        currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)楼(.*)',id_to_categories['houseno'])
+        currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)号楼(.*)',id_to_categories['houseno'])
         if currentstring1 != '':
-            current_string_list.append(currentstring1+'楼')
-            
+            flag1 = True
+            current_string_list.append(currentstring1+'号楼')
+        
+        currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)栋(.*)',id_to_categories['houseno'])
+        if currentstring1 != '':
+            flag1 = True
+            current_string_list.append(currentstring1+'栋')
+        
+        if flag1 == False:
+            houseno_list = ['0栋','00栋','000栋','0幢','00幢','000幢',
+                            '0号楼','00号楼','000号楼',
+              '一号楼','二号楼','三号楼','13号楼','21号楼','37号楼','18号楼']
+            houseno_data = houseno_list[random.randint(0,len(houseno_list)-1)]
+            current_string_list.append(houseno_data)
+            current_houseno = []
+            for _ in range(len(houseno_data)):
+                current_houseno.append(id_to_categories['houseno'])
+            current_label.append(current_houseno)
+        
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)区(.*)',id_to_categories['assist'])
         if currentstring1 != '':
             current_string_list.append(currentstring1+'边')
@@ -300,9 +319,15 @@ for data in result_str:
         if currentstring1 != '':
             current_string_list.append(currentstring1+'侧')
         
-        #!!!这里带不带单元可以两试!!!
-        current_string_list.append(str(random.randint(0,9))+'单元')
-        current_label.append([id_to_categories['cellno'],id_to_categories['cellno'],id_to_categories['cellno']])
+        cellno_list = ['0单元','0单元','0单元','00单元','000单元',
+               '0单元','00单元','000单元','0单元','00单元','000单元','0单元','00单元','000单元',
+              '一单元','二单元','三单元','四单元','五单元','六单元','七单元','八单元','九单元']
+        cellno_data = cellno_list[random.randint(0,len(cellno_list)-1)]
+        current_string_list.append(cellno_data)
+        current_cellno = []
+        for _ in range(len(cellno_data)):
+            current_cellno.append(id_to_categories['cellno'])
+        current_label.append(current_cellno)
         
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)层(.*)',id_to_categories['floorno'])
         if currentstring1 != '':
@@ -320,11 +345,35 @@ for data in result_str:
                 current_label.append(data_list)
                 current_string_list.append(data1)
                 currentstring2 = data2
+        
+        result = re.match(r'([0-9A-Za-z]+-[0-9A-Za-z]+)(.*)',currentstring2)
+        if result != None:
+            data1 = result.group(1)
+            data2 = result.group(2)
+            if data1 != '':
+                current_string_list.append(data1)
+                data_list = []
+                for _ in range(len(data1)):
+                    data_list.append(id_to_categories['detail'])
+                current_label.append(data_list)
+                current_string_list.append(data1)
+                currentstring2 = data2
 
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)号(.*)',id_to_categories['roomno'])
         if currentstring1 != '':
             current_string_list.append(currentstring1+'号')
-
+    r"""
+    current_string_list.append('附近')
+    current_label.append([id_to_categories['assist'],id_to_categories['assist']])
+    """
+    assist_list = ['附近','周围','东','西','南','北','中']
+    assist_data = assist_list[random.randint(0,len(assist_list)-1)]
+    current_string_list.append(assist_data)
+    current_assist = []
+    for _ in range(len(assist_data)):
+        current_assist.append(id_to_categories['assist'])
+    current_label.append(current_assist)
+    
     if flag == True:
         flag = False
         if flag != True:
@@ -405,7 +454,9 @@ for data in result_str:
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)期(.*)',id_to_categories['subpoi'])
         if currentstring1 != '':
             current_string_list.append(currentstring1+'期')
+        
     
+        #flag1检验是否存在楼栋号
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)幢(.*)',id_to_categories['houseno'])
         if currentstring1 != '':
             current_string_list.append(currentstring1+'幢')
@@ -413,6 +464,10 @@ for data in result_str:
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)楼(.*)',id_to_categories['houseno'])
         if currentstring1 != '':
             current_string_list.append(currentstring1+'楼')
+            
+        currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)楼(.*)',id_to_categories['houseno'])
+        if currentstring1 != '':
+            current_string_list.append(currentstring1+'栋')
             
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)区(.*)',id_to_categories['assist'])
         if currentstring1 != '':
@@ -422,8 +477,15 @@ for data in result_str:
         if currentstring1 != '':
             current_string_list.append(currentstring1+'侧')
         
-        current_string_list.append(str(random.randint(0,9))+'单元')
-        current_label.append([id_to_categories['cellno']*3])
+        cellno_list = ['0单元','0单元','0单元','00单元','000单元',
+               '0单元','00单元','000单元','0单元','00单元','000单元','0单元','00单元','000单元',
+              '一单元','二单元','三单元','四单元','五单元','六单元','七单元','八单元','九单元']
+        cellno_data = cellno_list[random.randint(0,len(cellno_list)-1)]
+        current_string_list.append(cellno_data)
+        current_cellno = []
+        for _ in range(len(cellno_data)):
+            current_cellno.append(id_to_categories['cellno'])
+        current_label.append(current_cellno)
         
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)层(.*)',id_to_categories['floorno'])
         if currentstring1 != '':
@@ -442,10 +504,37 @@ for data in result_str:
                 current_string_list.append(data1)
                 currentstring2 = data2
         
+        result = re.match(r'([0-9A-Za-z]+-[0-9A-Za-z]+)(.*)',currentstring2)
+        if result != None:
+            data1 = result.group(1)
+            data2 = result.group(2)
+            if data1 != '':
+                current_string_list.append(data1)
+                data_list = []
+                for _ in range(len(data1)):
+                    data_list.append(id_to_categories['detail'])
+                current_label.append(data_list)
+                current_string_list.append(data1)
+                currentstring2 = data2
+        
         currentstring1,currentstring2,current_label = split_data(currentstring2,current_label,'(.*?)号(.*)',id_to_categories['roomno'])
         if currentstring1 != '':
             current_string_list.append(currentstring1+'号')
-            
+        
+        r"""
+        current_string_list.append('周围')
+        current_label.append([id_to_categories['assist'],id_to_categories['assist']])
+        """
+        assist_list = ['附近','周围','东','西','南','北','中']
+        assist_data = assist_list[random.randint(0,len(assist_list)-1)]
+        current_string_list.append(assist_data)
+        current_assist = []
+        for _ in range(len(assist_data)):
+            current_assist.append(id_to_categories['assist'])
+        current_label.append(current_assist)
+        
     final_str.append(current_string_list)
     final_label.append(current_label)
 
+print(final_str)
+print(final_label)
